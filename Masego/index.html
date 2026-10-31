@@ -51,6 +51,9 @@
             z-index: 999;
             top: 55%;
             left: 55%;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
         }
         img { border-radius: 15px; margin-bottom: 1rem; }
         .heart {
@@ -69,69 +72,31 @@
 </head>
 <body>
     <div class="card" id="mainCard">
-        <img id="displayGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXF6YmswdGZ6YmswdGZ6YmswdGZ6YmswdGZ6YmswdGZ6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCtmYWN0b3J5L2dpZl9zZWFyY2gmY3Q9Zw/MDJ9IbxxvDUQM/giphy.gif" width="180">
+        <img id="displayGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXF6YmswdGZ6YmswdGZ6YmswdGZ6YmswdGZ6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCtmYWN0b3J5L2dpZl9zZWFyY2gmY3Q9Zw/MDJ9IbxxvDUQM/giphy.gif" width="180">
         
         <!-- 1. EDIT QUESTION & NAME HERE -->
         <h1 id="questionText">Masego, will you give me a chance before you write me off? ❤️🥹</h1>
         
         <div class="btn-container">
             <button id="yesBtn" onclick="accepted()">Yes!</button>
-            <button id="noBtn" onmouseover="moveButton()" onclick="moveButton()">No</button>
+            <button id="noBtn" onmouseover="moveButton()" ontouchstart="moveButton(event)" onclick="moveButton(event)">No</button>
         </div>
     </div>
 
     <script>
-        // Runaway "No" button
-        function moveButton() {
+        // Runaway "No" button (Mobile Touch & Desktop Safe Bounds)
+        function moveButton(e) {
+            if (e) {
+                e.preventDefault();
+            }
+
             const noBtn = document.getElementById('noBtn');
-            const padding = 50;
-            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            const padding = 20;
 
-            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+            const viewWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+            const viewHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
-            noBtn.style.left = randomX + 'px';
-            noBtn.style.top = randomY + 'px';
-        }
+            const btnWidth = noBtn.offsetWidth || 80;
+            const btnHeight = noBtn.offsetHeight || 45;
 
-        // When "Yes" is clicked
-        async function accepted() {
-            const accessKey = "2d29ab90-fcb1-4910-801b-2d0cfc8acf6c"; 
-            
-            // Web3Forms notification
-            fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    access_key: accessKey,
-                    // 2. EDIT EMAIL ALERT DETAILS HERE
-                    subject: "PROPOSAL ALERT",
-                    message: "Masego said YES!"
-                })
-            });
-
-            // 3. EDIT ACCEPTANCE CARD HERE (Update photo/gif and message)
-            document.getElementById('mainCard').innerHTML = `
-                <img src="photo.jpeg" width="250" style="border-radius: 20px; margin-bottom: 15px;">
-                <h1>Yay! I knew you'd say yes! 🥰</h1>
-                <p>Prepare for our ice cream date 🍦🥂</p>
-            `;
-            
-            document.getElementById('noBtn').style.display = 'none';
-        }
-
-        // Background hearts
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
-            heart.innerHTML = '❤️';
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            document.body.appendChild(heart);
-            setTimeout(() => heart.remove(), 5000);
-        }
-        setInterval(createHeart, 300);
-    </script>
-</body>
-</html>
+            const maxX = Math.max(0, viewWidth - btnWidth - padding);
