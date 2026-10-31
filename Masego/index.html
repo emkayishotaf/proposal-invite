@@ -73,10 +73,7 @@
 <body>
     <div class="card" id="mainCard">
         <img id="displayGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXF6YmswdGZ6YmswdGZ6YmswdGZ6YmswdGZ6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCtmYWN0b3J5L2dpZl9zZWFyY2gmY3Q9Zw/MDJ9IbxxvDUQM/giphy.gif" width="180">
-        
-        <!-- 1. EDIT QUESTION & NAME HERE -->
         <h1 id="questionText">Masego, will you give me a chance before you write me off? ❤️🥹</h1>
-        
         <div class="btn-container">
             <button id="yesBtn" onclick="accepted()">Yes!</button>
             <button id="noBtn" onmouseover="moveButton()" ontouchstart="moveButton(event)" onclick="moveButton(event)">No</button>
@@ -84,7 +81,13 @@
     </div>
 
     <script>
-        // Runaway "No" button (Mobile Touch & Desktop Safe Bounds)
+        // 1. Personalization (Default to Lihle if no ?name= is in the URL)
+        const urlParams = new URLSearchParams(window.location.search);
+        const herName = urlParams.get('name') || "Masego";
+        
+        document.getElementById('questionText').innerText = herName + " sthandwa sam The Official Proposal Will you be my girlfriend? ❤️🥹";
+
+        // 2. The Runaway "No" Button (Mobile & Desktop)
         function moveButton(e) {
             if (e) {
                 e.preventDefault();
@@ -100,3 +103,50 @@
             const btnHeight = noBtn.offsetHeight || 45;
 
             const maxX = Math.max(0, viewWidth - btnWidth - padding);
+            const maxY = Math.max(0, viewHeight - btnHeight - padding);
+
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+        }
+
+        // 3. Success & Notification (Sends exact person name)
+        async function accepted() {
+            const accessKey = "2d29ab90-fcb1-4910-801b-2d0cfc8acf6c";
+
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    access_key: accessKey,
+                    subject: "PROPOSAL ALERT",
+                    message: herName + " just said YES!"
+                })
+            });
+
+            document.getElementById('mainCard').innerHTML = `
+                <img src="Thobile/img3.jpeg" width="250" style="border-radius: 20px; margin-bottom: 15px;">
+                <h1>Yay! I knew you'd say yes! 🥰</h1>
+                <p>Let's plan for our date in Menlyn! 🥂</p>
+            `;
+
+            document.getElementById('noBtn').style.display = 'none';
+        }
+
+        // 4. Background Decor
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
+        setInterval(createHeart, 300);
+    </script>
+</body>
+</html>
