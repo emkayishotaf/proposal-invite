@@ -79,11 +79,10 @@
     </div>
 
     <script>
-        // 1. Personalization (Pulling name from URL)
-        const urlParams = new URLSearchParams(window.location.search);
-        const herName = urlParams.get('name');
-        if (Lihle) {
-            document.getElementById('questionText').innerText = Lihle + ", will you be my Girlfriend? ❤️";
+        // 1. Personalization (Pulling name from URL or defaulting to Lihle)
+            const urlParams = new URLSearchParams(window.location.search);
+            const herName = urlParams.get('name') || "Lihle";
+            document.getElementById('questionText').innerText = herName + ", will you be my Girlfriend? ❤️";
         }
 
         // 2. The Runaway "No" Button
